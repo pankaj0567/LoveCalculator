@@ -1,10 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet,View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet,View,Text} from 'react-native';
 import { TextInput,Appbar,Button   } from 'react-native-paper';
 
  Home = ()=> {
-  const [text, setText] = useState('');
+  const [firstPersonName, setFirstPersonName] = useState('');
+  const [secondPersonName, setSecondPersonName] = useState('');
+  const [percentage, setPercentage] = useState('');
+  const [result, setResult] = useState('');
+
+
+  const calculate = () => {
+
+    console.log('lick')
+    fetch(`https://love-calculator.p.rapidapi.com/getPercentage?fname=${secondPersonName}&sname=${firstPersonName}`, {
+      "headers": {
+        "x-rapidapi-host": "love-calculator.p.rapidapi.com",
+        "x-rapidapi-key": "24a60e2142mshc2914aecaafab7dp108179jsnc6a506cc429f"
+        
+      }
+    })
+    .then(data=>data.json())
+    .then(data2=>{
+      console.log(data2)
+      setPercentage(data2.percentage)
+      setResult(data2.result)
+    })
+    .catch(err => {
+      console.error(err);
+    });
+    console.log('done')
+}; //
 
   return (
     <View style={styles.container, {marginTop:40}}>
@@ -15,24 +41,27 @@ import { TextInput,Appbar,Button   } from 'react-native-paper';
     <TextInput
     style={styles.textIn}
       label="Enter Person Name(Male)"
-      value={text}
-      onChangeText={text => setText(text)}
+      value={firstPersonName}
+      onChangeText={text => setFirstPersonName(text)}
       />
      
      
      <TextInput
      style={styles.textIn}
        label="Enter Person Name(Female)"
-       value={text}
-       onChangeText={text => setText(text)}
+       value={secondPersonName}
+       onChangeText={text => setSecondPersonName(text)}
        />
       
-      <Button icon="heart" style={{marginHorizontal:0,height:40}} mode="contained" onPress={() => console.log('Pressed')}>
+      <Button icon="heart" style={{marginHorizontal:0,height:40}} mode="contained" onPress={() => { calculate(); }}>
       Calculate
   </Button>
 
+     <View style={styles.container,{marginTop:50,alignItems:'center',justifyContent:'center'}}>
+        <Text style={styles.text}>{percentage}</Text>
+        <Text style={{fontSize:20,color:'red'}}>{result}</Text>  
+      </View>
       
-
      <StatusBar />
    </View>
   // </View>
@@ -42,13 +71,18 @@ import { TextInput,Appbar,Button   } from 'react-native-paper';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'pink',
     
     // alignItems: 'center',
     // justifyContent: 'center',
   },
   textIn:{
     marginVertical:5
+  },
+  text:{
+    fontSize:40,
+    color:'red'
+
   }
 });
 
